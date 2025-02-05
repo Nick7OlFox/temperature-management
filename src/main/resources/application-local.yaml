@@ -4,6 +4,7 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/tempman
+    username: tempManUser
 
 logging:
   level:
