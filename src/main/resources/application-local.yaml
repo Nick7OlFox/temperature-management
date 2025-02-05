@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/tempman
+
+logging:
+  level:
+    org:
+      hibernate:
+        sql: DEBUG
+  file:
+    name: /proj/Temp-Man-DEV/logs/trace.log
+  logback:
+    rollingpolicy:
+      file-name-pattern: tempMan-%d{yyyy-MM-dd}/%i.log

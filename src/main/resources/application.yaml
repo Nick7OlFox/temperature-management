@@ -1,0 +1,10 @@
+server:
+  shutdown: graceful
+  servlet:
+    context-path: /temperature-manager
+
+spring:
+  application:
+    name: Temperatue Manager
+  profiles:
+    active: local
