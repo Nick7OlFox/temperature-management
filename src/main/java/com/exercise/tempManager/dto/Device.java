@@ -1,6 +1,7 @@
 package com.exercise.tempManager.dto;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.sql.Timestamp;
 /**
  * Class to represent an IoT Device
  */
+@Entity
 @Data
 @Builder
 @AllArgsConstructor
@@ -26,7 +28,4 @@ public class Device {
 
     @Column(name = "location")
     private String location;
-
-    @Column(name = "end_date")
-    private Timestamp endDate;
 }
