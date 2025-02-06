@@ -35,7 +35,6 @@ class TemperatueManagerApplicationTests {
 	// Testing constants
 	private final String DEVICE_NAME = "Test Device";
 	private final String DEVICE_LOCATION = "Test Location";
-
 	private final Device TEST_DEVICE = new Device(DEVICE_NAME, DEVICE_LOCATION);
 
 	@Test
