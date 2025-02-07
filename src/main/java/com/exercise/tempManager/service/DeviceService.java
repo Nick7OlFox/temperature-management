@@ -1,5 +1,7 @@
 package com.exercise.tempManager.service;
 
+import com.exercise.tempManager.common.Constants;
+import com.exercise.tempManager.common.UtilityMethods;
 import com.exercise.tempManager.dto.Device;
 import com.exercise.tempManager.dto.Record;
 import com.exercise.tempManager.exceptions.DeviceNotFoundException;
@@ -8,6 +10,7 @@ import com.exercise.tempManager.repository.DeviceRepository;
 import com.exercise.tempManager.request.RecordRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -24,13 +27,15 @@ public class DeviceService {
     @Autowired
     DeviceRepository deviceRepository;
 
+    @Autowired
+    CacheManager cacheManager;
+
     /**
      * This method will be used when recording a temperature. It will either get the existing device from the db or it
      * if that is not found it will create a new device
      * @param request The request where the device information is present
      * @return The device that made the request
      */
-    @Cacheable(value = "devices", key = "#deviceName")
     public Device prepareDeviceForRecord(RecordRequest request){
         Device device;
         try{
@@ -48,7 +53,7 @@ public class DeviceService {
      * @return A device object populated with the data from the database
      * @throws DeviceNotFoundException It will be thrown if the method cannot find a device with the passed name
      */
-    @CachePut(value = "devices", key = "#deviceName")
+    @Cacheable(value = Constants.DEVICE, key = "#deviceName")
     public Device findDevice(String deviceName) throws DeviceNotFoundException {
         log.info("Looking for device: " + deviceName);
         Optional<Device> response = deviceRepository.findById(deviceName);
@@ -56,6 +61,7 @@ public class DeviceService {
         // If it doesn't exist then we throw exception so we can register the device
         if (!response.isPresent()) {
             String message = "Device with name: " + deviceName + " was not found";
+            cacheManager.getCache(Constants.DEVICE).evict(deviceName); // Ensure we don't save a null into the cache
             log.warn(message);
             throw new DeviceNotFoundException(message);
         }
@@ -72,7 +78,7 @@ public class DeviceService {
      * @param location The location of the device
      * @return A Device object as saved in the database
      */
-    @CachePut(value = "devices", key = "#deviceName")
+    @CachePut(value = Constants.DEVICE, key = "#deviceName")
     public Device registerDevice(String deviceName, String location) {
         // If this is being called we already tried to find the device name so we can safely create it
         log.debug("Registering device: " + deviceName);
@@ -90,7 +96,7 @@ public class DeviceService {
      * @param dateAndHour The date and hour for which the calculation needs to be performed
      * @return The value of the calculated average
      */
-    @Cacheable(value = "deviceAtCertainTime", key = "#device + '@' + #dateAndHour")
+    @Cacheable(value = Constants.DEVICE_AT_CERTAIN_TIME, key = "#device + '@' + #cacheTime")
     @Transactional
     public float deviceHourlyAverage(String device, Timestamp dateAndHour) {
         // Retrieve records
@@ -101,6 +107,9 @@ public class DeviceService {
             log.warn(message);
             throw new RecordNotFoundException(message);
         }
+
+        // Save cache
+        String cacheTime = UtilityMethods.convertTimeToString(dateAndHour);
 
         // Return average of results fetched
         return calculateAverage(list);

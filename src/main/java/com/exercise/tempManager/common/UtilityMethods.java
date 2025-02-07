@@ -25,4 +25,16 @@ public class UtilityMethods {
             throw new RuntimeException("There was an error when processing the data passed in the request");
         }
     }
+
+    public static String convertTimeToString(Timestamp input){
+        try {
+            // Make sure we invalidate the cache for the hour we just registered
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.AVERAGE_REQUEST_DATE_FORMAT);
+            String dateAndHour = dateFormat.format(new Date(input.getTime()));
+            return dateAndHour;
+        } catch(Exception e) {
+            log.warn("Error during data conversion: " + e.getMessage());
+            throw new RuntimeException("There was an error when processing the data passed in the request");
+        }
+    }
 }

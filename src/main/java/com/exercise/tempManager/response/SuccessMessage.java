@@ -16,4 +16,5 @@ public class SuccessMessage<T> {
     private int status;
     private Timestamp timestamp;
     private T data;
+    private String message;
 }

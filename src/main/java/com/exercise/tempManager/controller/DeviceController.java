@@ -1,5 +1,6 @@
 package com.exercise.tempManager.controller;
 
+import com.exercise.tempManager.common.Constants;
 import com.exercise.tempManager.common.UtilityMethods;
 import com.exercise.tempManager.response.SuccessMessage;
 import com.exercise.tempManager.service.DeviceService;
@@ -18,7 +19,7 @@ public class DeviceController {
     @GetMapping("/hourly-average")
     @ResponseStatus(value = HttpStatus.OK)
     public SuccessMessage<Float> calculateAverageTemp(@RequestParam("device-name") String deviceName, @RequestParam("date-and-hour") String time){
-        return new SuccessMessage<Float>(HttpStatus.OK.value(), new Timestamp(System.currentTimeMillis()), deviceService.deviceHourlyAverage(deviceName, UtilityMethods.convertStringToTimeStamp(time)));
+        return new SuccessMessage<Float>(HttpStatus.OK.value(), new Timestamp(System.currentTimeMillis()), deviceService.deviceHourlyAverage(deviceName, UtilityMethods.convertStringToTimeStamp(time)), Constants.SUCCESS);
     }
 
 }

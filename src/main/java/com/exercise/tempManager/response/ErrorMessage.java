@@ -16,18 +16,15 @@ public class ErrorMessage {
     private int statusCode;
     private Date timestamp;
     private String message;
-    private String description;
 
     /**
      * Constructor to be used when creating the ErrorMessage through the @RestControllerExceptionHandler
      * @param statusCode The HTTP status code
      * @param ex The exception that was caught
-     * @param request The request that was caight by the handler
      */
-    public ErrorMessage(int statusCode, Exception ex, WebRequest request){
+    public ErrorMessage(int statusCode, Exception ex){
         this.statusCode = statusCode;
         this.timestamp = new Date();
         this.message = ex.getMessage();
-        this.description = request.getDescription(false);
     }
 }
