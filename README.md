@@ -22,3 +22,6 @@ the file application-local.yaml.
 
 ### Running the code
 When the database is successfully configured, you can now simply run the code as a simple Spring Boot project.
+
+### Using the API
+This API has a swagger UI configured. To use it when running the code on a local machine access the following URL: http://localhost:8080/temperature-manager/swagger-ui/index.html

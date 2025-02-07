@@ -6,6 +6,7 @@ import com.exercise.tempManager.exceptions.IncompleteProcessException;
 import com.exercise.tempManager.exceptions.RecordNotFoundException;
 import com.exercise.tempManager.response.ErrorMessage;
 import com.exercise.tempManager.response.PartialSuccessMessage;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,7 @@ import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
 @Slf4j
+@Hidden
 public class RestControllerExceptionHandler {
 
     /**
