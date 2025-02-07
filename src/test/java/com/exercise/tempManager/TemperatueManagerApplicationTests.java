@@ -1,5 +1,7 @@
 package com.exercise.tempManager;
 
+import com.exercise.tempManager.common.Constants;
+import com.exercise.tempManager.common.UtilityMethods;
 import com.exercise.tempManager.dto.Device;
 import com.exercise.tempManager.dto.Record;
 import com.exercise.tempManager.exceptions.DeviceNotFoundException;
@@ -67,13 +69,13 @@ class TemperatueManagerApplicationTests {
 
 	@Test
 	void calculateAverageDeviceTemperature(){
-		Cache cache = cacheManager.getCache("deviceAtCertainTime");
+		Cache cache = cacheManager.getCache(Constants.DEVICE_AT_CERTAIN_TIME);
 
 		String testIdentifier = String.valueOf(Math.random());
 		Device testDevice = deviceService.registerDevice(DEVICE_NAME + testIdentifier, DEVICE_LOCATION);
 
 		Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-		String cacheName = testDevice.getDeviceName() + "@" + currentTime.toString();
+		String cacheName = testDevice.getDeviceName() + "*" + UtilityMethods.convertTimeToString(currentTime);
 
 		// Create 3 records
 		Record r1 = recordService.recordTemperature(testDevice, currentTime, 10f);

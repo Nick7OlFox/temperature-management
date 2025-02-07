@@ -39,7 +39,7 @@ public class RecordService {
      * @param temperature Temperature recorded
      * @return The recorded entry as saved in the database
      */
-    @CacheEvict(value = Constants.DEVICE_AT_CERTAIN_TIME, key = "#device.deviceName + '@' + #dateAndHour")
+    @CacheEvict(value = Constants.DEVICE_AT_CERTAIN_TIME, key = "#device.deviceName + '*' + #dateAndHour")
     public Record recordTemperature(Device device, Timestamp timeOfRecord, Float temperature){
         // Input safety
         if(temperature == null)

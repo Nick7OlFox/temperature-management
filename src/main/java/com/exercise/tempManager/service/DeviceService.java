@@ -3,14 +3,12 @@ package com.exercise.tempManager.service;
 import com.exercise.tempManager.common.Constants;
 import com.exercise.tempManager.common.UtilityMethods;
 import com.exercise.tempManager.dto.Device;
-import com.exercise.tempManager.dto.Record;
 import com.exercise.tempManager.exceptions.DeviceNotFoundException;
 import com.exercise.tempManager.exceptions.RecordNotFoundException;
 import com.exercise.tempManager.repository.DeviceRepository;
 import com.exercise.tempManager.request.RecordRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -27,25 +25,24 @@ public class DeviceService {
     @Autowired
     DeviceRepository deviceRepository;
 
-    @Autowired
-    CacheManager cacheManager;
-
     /**
      * This method will be used when recording a temperature. It will either get the existing device from the db or it
      * if that is not found it will create a new device
+     *
      * @param request The request where the device information is present
      * @return The device that made the request
      */
-    public Device prepareDeviceForRecord(RecordRequest request){
+    public Device prepareDeviceForRecord(RecordRequest request) {
         Device device;
-        try{
+        try {
             device = findDevice(request.getDeviceName());
-        }catch (DeviceNotFoundException ex){
+        } catch (DeviceNotFoundException ex) {
             log.warn("Registering a new device: " + request.getDeviceName());
             device = registerDevice(request.getDeviceName(), request.getLocation());
         }
         return device;
     }
+
     /**
      * This method will return the desired device from the database
      *
@@ -61,21 +58,19 @@ public class DeviceService {
         // If it doesn't exist then we throw exception so we can register the device
         if (!response.isPresent()) {
             String message = "Device with name: " + deviceName + " was not found";
-            cacheManager.getCache(Constants.DEVICE).evict(deviceName); // Ensure we don't save a null into the cache
             log.warn(message);
             throw new DeviceNotFoundException(message);
         }
-
-        Device device = response.get();
 
         log.info("Device found");
         return response.get();
     }
 
     /**
-     * This method will register a new device in case it was not found
+     * This method will register a new device
+     *
      * @param deviceName The name of the device
-     * @param location The location of the device
+     * @param location   The location of the device
      * @return A Device object as saved in the database
      */
     @CachePut(value = Constants.DEVICE, key = "#deviceName")
@@ -92,24 +87,24 @@ public class DeviceService {
     /**
      * This method will retrieve an average of the temperatures registered by a given device in a given 1 hour
      * interval
-     * @param device The name of the device
+     *
+     * @param deviceName      The name of the device
      * @param dateAndHour The date and hour for which the calculation needs to be performed
      * @return The value of the calculated average
      */
-    @Cacheable(value = Constants.DEVICE_AT_CERTAIN_TIME, key = "#device + '@' + #cacheTime")
-    @Transactional
-    public float deviceHourlyAverage(String device, Timestamp dateAndHour) {
+    @Cacheable(value = Constants.DEVICE_AT_CERTAIN_TIME, key = "#deviceName + '*' + T(com.exercise.tempManager.common.UtilityMethods).convertTimeToString(#dateAndHour)")    @Transactional
+    public float deviceHourlyAverage(String deviceName, Timestamp dateAndHour) {
         // Retrieve records
-        log.info("Calculating average temperature for device " + device + " at " + dateAndHour);
-        ArrayList<Float> list = deviceRepository.getRecordsForTime(device, dateAndHour);
-        if(list.isEmpty()){
-            String message = "No records found for device " + device + " at " + dateAndHour;
+        log.info("Calculating average temperature for device " + deviceName + " at " + dateAndHour);
+        ArrayList<Float> list = deviceRepository.getRecordsForTime(deviceName, dateAndHour);
+        if (list.isEmpty()) {
+            String message = "No records found for device " + deviceName + " at " + dateAndHour;
             log.warn(message);
             throw new RecordNotFoundException(message);
         }
 
         // Save cache
-        String cacheTime = UtilityMethods.convertTimeToString(dateAndHour);
+//        String cacheTime = UtilityMethods.convertTimeToString(dateAndHour);
 
         // Return average of results fetched
         return calculateAverage(list);
@@ -117,6 +112,7 @@ public class DeviceService {
 
     /**
      * This method will take a list of temperatures and calculate the average
+     *
      * @param listOfRecordsForDevice An array with the recorded temperatures
      * @return The average of all the temperatures
      */

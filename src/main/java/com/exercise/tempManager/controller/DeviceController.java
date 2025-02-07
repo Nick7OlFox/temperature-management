@@ -16,9 +16,10 @@ public class DeviceController {
 
     @Autowired
     DeviceService deviceService;
+
     @GetMapping("/hourly-average")
     @ResponseStatus(value = HttpStatus.OK)
-    public SuccessMessage<Float> calculateAverageTemp(@RequestParam("device-name") String deviceName, @RequestParam("date-and-hour") String time){
+    public SuccessMessage<Float> calculateAverageTemp(@RequestParam("device-name") String deviceName, @RequestParam("date-and-hour") String time) {
         return new SuccessMessage<Float>(HttpStatus.OK.value(), new Timestamp(System.currentTimeMillis()), deviceService.deviceHourlyAverage(deviceName, UtilityMethods.convertStringToTimeStamp(time)), Constants.SUCCESS);
     }
 
