@@ -5,7 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Timestamp;
+
 
 @Data
 @Builder
@@ -13,6 +14,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class SuccessMessage<T> {
     private int status;
-    private Date timestamp;
+    private Timestamp timestamp;
     private T data;
 }

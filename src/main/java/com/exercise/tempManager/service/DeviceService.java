@@ -1,9 +1,11 @@
 package com.exercise.tempManager.service;
 
 import com.exercise.tempManager.dto.Device;
+import com.exercise.tempManager.dto.Record;
 import com.exercise.tempManager.exceptions.DeviceNotFoundException;
 import com.exercise.tempManager.exceptions.RecordNotFoundException;
 import com.exercise.tempManager.repository.DeviceRepository;
+import com.exercise.tempManager.request.RecordRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
@@ -23,13 +25,30 @@ public class DeviceService {
     DeviceRepository deviceRepository;
 
     /**
+     * This method will be used when recording a temperature. It will either get the existing device from the db or it
+     * if that is not found it will create a new device
+     * @param request The request where the device information is present
+     * @return The device that made the request
+     */
+    @Cacheable(value = "devices", key = "#deviceName")
+    public Device prepareDeviceForRecord(RecordRequest request){
+        Device device;
+        try{
+            device = findDevice(request.getDeviceName());
+        }catch (DeviceNotFoundException ex){
+            log.warn("Registering a new device: " + request.getDeviceName());
+            device = registerDevice(request.getDeviceName(), request.getLocation());
+        }
+        return device;
+    }
+    /**
      * This method will return the desired device from the database
      *
      * @param deviceName The name of the device
      * @return A device object populated with the data from the database
      * @throws DeviceNotFoundException It will be thrown if the method cannot find a device with the passed name
      */
-    @Cacheable(value = "devices", key = "#deviceName")
+    @CachePut(value = "devices", key = "#deviceName")
     public Device findDevice(String deviceName) throws DeviceNotFoundException {
         log.info("Looking for device: " + deviceName);
         Optional<Device> response = deviceRepository.findById(deviceName);

@@ -22,7 +22,7 @@ public class ErrorMessage {
      * Constructor to be used when creating the ErrorMessage through the @RestControllerExceptionHandler
      * @param statusCode The HTTP status code
      * @param ex The exception that was caught
-     * @param request // TODO Complete description
+     * @param request The request that was caight by the handler
      */
     public ErrorMessage(int statusCode, Exception ex, WebRequest request){
         this.statusCode = statusCode;
