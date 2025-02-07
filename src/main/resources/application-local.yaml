@@ -21,4 +21,4 @@ logging:
     name: /proj/Temp-Man-DEV/logs/trace.log
   logback:
     rollingpolicy:
-      file-name-pattern: tempMan-%d{yyyy-MM-dd}/%i.log
+      file-name-pattern: /proj/Temp-Man-DEV/logs/logbacks/tempMan-%d{yyyy-MM-dd}/%i.log
